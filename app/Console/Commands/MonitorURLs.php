@@ -15,7 +15,11 @@ class MonitorURLs extends Command
     public function handle()
     {
         $customerSites = CustomerSite::where('is_active', 1)
-            ->orderByRaw("FIELD (priority_code, 'high', 'normal', 'low')")
+            // ->orderByRaw("FIELD (priority_code, 'high', 'normal', 'low')")
+            ->orderByRaw("CASE priority_code 
+                WHEN 'high' THEN 0
+                WHEN 'normal' THEN 1
+                WHEN 'low' THEN 2")
             ->get(); // Add your desired URLs here
 
         foreach ($customerSites as $customerSite) {
