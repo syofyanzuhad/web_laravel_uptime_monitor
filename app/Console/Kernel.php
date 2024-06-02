@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        Schedule::command('telescope:prune --hours=48')->hourly();
         $schedule->command('monitor:urls')->everyMinute();
         $schedule->command('notify-user')->everyMinute();
     }
