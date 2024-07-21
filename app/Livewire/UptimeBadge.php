@@ -33,15 +33,31 @@ class UptimeBadge extends Component
             ->latest('id')
             ->take(15)
             ->get(['response_time', 'status_code', 'created_at'])
-            ->sortKeysDesc()
-            ->map(function ($monitoringLog) use ($customerSite) {
-                $monitoringLog->uptime_badge_bg_color = $this->getUptimeBadgeBgColor($customerSite, $monitoringLog);
-                $monitoringLog->uptime_badge_title = $this->getUptimeBadgeTitle($monitoringLog);
-
-                return $monitoringLog;
+            ->keyBy(function($item) {
+                return $item->created_at->format('Y-m-d H:i:00');
             });
-        return $monitoringLogs;
+    
+        $last15Minutes = collect(range(0, 14))->map(function ($minuteAgo) use ($monitoringLogs) {
+            $minute = now()->subMinutes($minuteAgo)->format('Y-m-d H:i:00');
+            if ($monitoringLogs->has($minute)) {
+                $log = $monitoringLogs->get($minute);
+                $log->uptime_badge_bg_color = $this->getUptimeBadgeBgColor($customerSite, $log);
+                $log->uptime_badge_title = $this->getUptimeBadgeTitle($log);
+            } else {
+                $log = (object)[
+                    'created_at' => $minute,
+                    'response_time' => null,
+                    'status_code' => null,
+                    'uptime_badge_bg_color' => 'secondary',
+                    'uptime_badge_title' => $minute . ' (no data)',
+                ];
+            }
+            return $log;
+        });
+    
+        return $last15Minutes;
     }
+
 
     private function getUptimeBadgeBgColor(CustomerSite $customerSite, MonitoringLog $monitoringLog): string
     {
