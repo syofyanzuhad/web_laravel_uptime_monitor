@@ -37,7 +37,7 @@ class UptimeBadge extends Component
                 return $item->created_at->format('Y-m-d H:i:00');
             });
     
-        $last15Minutes = collect(range(0, 14))->map(function ($minuteAgo) use ($monitoringLogs) {
+        $last15Minutes = collect(range(0, 14))->map(function ($minuteAgo) use ($monitoringLogs, $customerSite) {
             $minute = now()->subMinutes($minuteAgo)->format('Y-m-d H:i:00');
             if ($monitoringLogs->has($minute)) {
                 $log = $monitoringLogs->get($minute);
