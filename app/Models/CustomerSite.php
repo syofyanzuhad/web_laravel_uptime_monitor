@@ -61,7 +61,7 @@ class CustomerSite extends Model
             return false;
         }
 
-        return true;
+        return boolval($this->notify_user_interval);
     }
 
     public function canNotifyUser(): bool
