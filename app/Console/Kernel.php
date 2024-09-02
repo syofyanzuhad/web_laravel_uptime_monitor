@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('telescope:prune --hours=24')->hourly();
         $schedule->command('monitor:urls')->everyMinute();
         $schedule->command('notify-user')->everyMinute();
+        $schedule->command('model:prune')->hourly();
     }
 
     /**
